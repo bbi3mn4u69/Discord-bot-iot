@@ -9,3 +9,4 @@ def get_weather(city, key):
         return f"🌤 Weather in {city}:\nTemp: {temp}°C\nCondition: {desc}"
     except Exception as e:
         return f"Error fetching weather: {e}"
+
