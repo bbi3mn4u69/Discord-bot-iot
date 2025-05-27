@@ -1,23 +1,25 @@
 import random
-try:
-    import RPi.GPIO as GPIO
-    PUMP_PIN = 18
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(PUMP_PIN, GPIO.OUT)
-except:
-    print("GPIO not available, running in debug mode.")
+# try:
+#     import RPi.GPIO as GPIO
+#     PUMP_PIN = 18
+#     GPIO.setmode(GPIO.BCM)
+#     GPIO.setup(PUMP_PIN, GPIO.OUT)
+# except:
+#     print("GPIO not available, running in debug mode.")
 
 def turn_on_pump():
-    print("Pump ON (simulated)")
+    
     try:
-        GPIO.output(PUMP_PIN, GPIO.HIGH)
+        print("Pump ON (simulated)")
+        # GPIO.output(PUMP_PIN, GPIO.HIGH)
     except:
         pass
 
 def turn_off_pump():
-    print("Pump OFF (simulated)")
+    
     try:
-        GPIO.output(PUMP_PIN, GPIO.LOW)
+        print("Pump OFF (simulated)")
+        # GPIO.output(PUMP_PIN, GPIO.LOW)
     except:
         pass
 
