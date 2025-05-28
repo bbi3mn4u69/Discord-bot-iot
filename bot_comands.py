@@ -194,16 +194,13 @@ def setup_bot(bot):
             ai_response = ai_frame(None, question, None)
 
             # build an embed (or plain text) to send back
-            embed.set_footer(text=f"Q: {question}")
             embed = discord.Embed(
                 title="🤖 AI Response",
                 description=ai_response,
                 color=discord.Color.teal()
             )
-
-           
+            embed.add_field(name="Q: ", value=question, inline=False)
             await ctx.send(embed=embed)
-
         except Exception as e:
             await ctx.send(f"❌ Error from AI: {e}")
 
