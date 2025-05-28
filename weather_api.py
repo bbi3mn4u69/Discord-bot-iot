@@ -15,8 +15,10 @@ def get_weather():
     # The order of variables in hourly or daily is important to assign them correctly below
     url = "https://api.open-meteo.com/v1/forecast"
     params = {
-        "latitude": -37.814,
-        "longitude": 144.9633,
+     	"latitude": 52.52,
+	    "longitude": 13.41,
+	    "hourly": "temperature_2m",
+	    "timezone": "Australia/Sydney",
         "hourly": ["temperature_2m", "rain", "soil_temperature_0cm", "wind_speed_10m", "sunshine_duration"],
         "forecast_days": 1
     }
