@@ -15,7 +15,7 @@ def get_ai_response():
         print(ai_response)
         return ai_response
     except Exception as e:
-        return f"Error fetching AI response: {e}"
+        return f"Error fetching AI response in ai_api.py: {e}"
 
 
 
