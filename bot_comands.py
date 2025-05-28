@@ -241,4 +241,9 @@ def setup_bot(bot):
             value="Get AI response based on the weather data",
             inline=False
         )
+        embed.add_field(
+            name="!qa <question>",
+            value="Ask the AI a question",
+            inline=False
+        )
         await ctx.send(embed=embed)
