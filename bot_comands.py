@@ -3,6 +3,7 @@ from iot_controller import turn_on_pump, turn_off_pump, get_status
 from weather_api import get_weather
 import discord
 from ai_api import get_ai_response
+from ai_frame import ai_frame
 
 def setup_bot(bot):
     @bot.event
@@ -181,6 +182,33 @@ def setup_bot(bot):
             await ctx.send(embed=embed)
         except Exception as e:
             await ctx.send(f"❌ Error getting AI response: {str(e)}")
+            
+            
+    @bot.command(name='qa')
+    async def qa(ctx, *, question: str):
+        """
+        Ask the AI a question. Everything after !qa is captured as `question`.
+        """
+        try:
+            # pass the user’s question to the AI helper
+            ai_response = ai_frame(None, question, None)
+
+            # build an embed (or plain text) to send back
+            embed = discord.Embed(
+                title="🤖 AI Response",
+                description=ai_response,
+                color=discord.Color.teal()
+            )
+            embed.set_footer(text=f"Q: {question}")
+            embed.add_field(
+                name="🤖 AI Response",
+                value=ai_response,
+                inline=False
+            )
+            await ctx.send(embed=embed)
+
+        except Exception as e:
+            await ctx.send(f"❌ Error from AI: {e}")
 
     @bot.command()
     async def helpme(ctx):
