@@ -1,15 +1,57 @@
-from discord.ext import commands
+from discord.ext import commands, tasks
 from iot_controller import turn_on_pump, turn_off_pump, get_status
 from weather_api import get_weather
 import discord
 from ai_api import get_ai_response
 from ai_frame import ai_frame
+from alert_handler import handle_alert, send_latest_alert, get_latest_alert
+import os
 
 def setup_bot(bot):
+    # Store the last sent alert timestamp and name
+    last_alert_timestamp = None
+    last_alert_name = None
+
+    @tasks.loop(minutes=1)  # Check every minute
+    async def check_new_alerts():
+        """Background task to check for new alerts"""
+        try:
+            # Get the alert channel
+            alert_channel_id = int(os.getenv("ALERT_CHANNEL_ID"))
+            channel = bot.get_channel(alert_channel_id)
+            if not channel:
+                print("Alert channel not found")
+                return
+
+            # Get the latest alert
+            latest_alert = get_latest_alert()
+            if not latest_alert:
+                return
+
+            nonlocal last_alert_timestamp, last_alert_name
+            # If this is a new alert (different timestamp or different alert name), send it
+            if (last_alert_timestamp is None or 
+                latest_alert['timestamp'] > last_alert_timestamp or 
+                latest_alert['alert_code'] != last_alert_name):
+                await send_latest_alert(channel)
+                last_alert_timestamp = latest_alert['timestamp']
+                last_alert_name = latest_alert['alert_code']
+                print(f"New alert sent: {latest_alert['alert_code']}")
+
+        except Exception as e:
+            print(f"Error in check_new_alerts: {e}")
+
     @bot.event
     async def on_ready():
         print(f'{bot.user} is online.')
         await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="!helpme"))
+        # Start the background task when the bot is ready
+        check_new_alerts.start()
+
+    @bot.event
+    async def on_disconnect():
+        # Stop the background task when the bot disconnects
+        check_new_alerts.cancel()
 
     @bot.command()
     async def status(ctx):
@@ -58,6 +100,7 @@ def setup_bot(bot):
             # Create the main embed
             embed = discord.Embed(
                 title="🌤 Weather Update for Melbourne",
+                description=weather_data,
                 color=discord.Color.orange()
             )
             
@@ -190,7 +233,7 @@ def setup_bot(bot):
         Ask the AI a question. Everything after !qa is captured as `question`.
         """
         try:
-            # pass the user’s question to the AI helper
+            # pass the user's question to the AI helper
             ai_response = ai_frame(None, question, None)
 
             # build an embed (or plain text) to send back
@@ -203,6 +246,14 @@ def setup_bot(bot):
             await ctx.send(embed=embed)
         except Exception as e:
             await ctx.send(f"❌ Error from AI: {e}")
+
+    @bot.command()
+    async def latest_alert(ctx):
+        """Fetch and display the latest alert from the database"""
+        try:
+            await send_latest_alert(ctx.channel)
+        except Exception as e:
+            await ctx.send(f"❌ Error fetching latest alert: {str(e)}")
 
     @bot.command()
     async def helpme(ctx):
@@ -232,13 +283,18 @@ def setup_bot(bot):
             inline=False
         )
         embed.add_field(
+            name="!latest_alert",
+            value="Get the most recent alert from the system",
+            inline=False
+        )
+        embed.add_field(
             name="!helpme",
             value="Display this help message",
             inline=False
         )
         embed.add_field(
             name="!ai",
-            value="Get AI response based on the weather data",
+            value="Get AI-powered greenhouse management recommendations",
             inline=False
         )
         embed.add_field(
