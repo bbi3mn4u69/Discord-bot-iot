@@ -4,7 +4,7 @@ from weather_api import get_weather
 import discord
 from ai_api import get_ai_response
 
-def setup_bot(bot, city, weather_key):
+def setup_bot(bot):
     @bot.event
     async def on_ready():
         print(f'{bot.user} is online.')
@@ -212,6 +212,11 @@ def setup_bot(bot, city, weather_key):
         embed.add_field(
             name="!helpme",
             value="Display this help message",
+            inline=False
+        )
+        embed.add_field(
+            name="!ai",
+            value="Get AI response based on the weather data",
             inline=False
         )
         await ctx.send(embed=embed)
