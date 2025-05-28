@@ -12,7 +12,7 @@ def setup_bot(bot):
     last_alert_timestamp = None
     last_alert_name = None
 
-    @tasks.loop(minutes=1)  # Check every minute
+    @tasks.loop(minutes=5)  # Check every minute
     async def check_new_alerts():
         """Background task to check for new alerts"""
         try:
