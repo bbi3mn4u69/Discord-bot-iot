@@ -7,6 +7,7 @@ import random
 # except:
 #     print("GPIO not available, running in debug mode.")
 
+#  this later on should be replaced with a api that controlls the pump and the fan
 def turn_on_pump():
     
     try:
@@ -20,6 +21,18 @@ def turn_off_pump():
     try:
         print("Pump OFF (simulated)")
         # GPIO.output(PUMP_PIN, GPIO.LOW)
+    except:
+        pass
+
+def turn_on_fan():
+    try:
+        print("Fan ON (simulated)")
+    except:
+        pass
+    
+def turn_off_fan():
+    try:
+        print("Fan OFF (simulated)")
     except:
         pass
 

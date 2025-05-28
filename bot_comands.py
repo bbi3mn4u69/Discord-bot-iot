@@ -1,5 +1,5 @@
 from discord.ext import commands, tasks
-from iot_controller import turn_on_pump, turn_off_pump, get_status
+from iot_controller import turn_on_pump, turn_off_pump, get_status, turn_on_fan, turn_off_fan
 from weather_api import get_weather
 import discord
 from ai_api import get_ai_response
@@ -256,6 +256,44 @@ def setup_bot(bot):
             await ctx.send(f"❌ Error fetching latest alert: {str(e)}")
 
     @bot.command()
+    async def fan_on(ctx):
+        try:
+            turn_on_fan()
+            embed = discord.Embed(
+                title="🌬️ Fan Control",
+                description="Fan has been activated",
+                color=discord.Color.blue()
+            )
+            await ctx.send(embed=embed)
+        except Exception as e:
+            await ctx.send(f"❌ Error activating fan: {str(e)}")
+
+    @bot.command()
+    async def fan_off(ctx):
+        try:
+            turn_off_fan()
+            embed = discord.Embed(
+                title="🌬️ Fan Control",
+                description="Fan has been deactivated",
+                color=discord.Color.blue()
+            )
+            await ctx.send(embed=embed)
+        except Exception as e:
+            await ctx.send(f"❌ Error deactivating fan: {str(e)}")
+
+    @bot.command()
+    async def fan_status(ctx):
+        try:
+            status = get_fan_status()
+            embed = discord.Embed(
+                title="🌬️ Fan Status",
+                description=f"Fan is currently {'ON' if status else 'OFF'}",
+                color=discord.Color.blue()
+            )
+            await ctx.send(embed=embed)
+        except Exception as e:
+            await ctx.send(f"❌ Error getting fan status: {str(e)}")
+
     async def helpme(ctx):
         embed = discord.Embed(
             title="🤖 Bot Commands",
@@ -295,6 +333,21 @@ def setup_bot(bot):
         embed.add_field(
             name="!ai",
             value="Get AI-powered greenhouse management recommendations",
+            inline=False
+        )
+        embed.add_field(
+            name="!fan_on",
+            value="Activate the fan",
+            inline=False
+        )
+        embed.add_field(
+            name="!fan_off",
+            value="Deactivate the fan",
+            inline=False
+        )
+        embed.add_field(
+            name="!fan_status",
+            value="Get the current status of the fan",
             inline=False
         )
         embed.add_field(
