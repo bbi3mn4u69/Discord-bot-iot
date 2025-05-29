@@ -306,6 +306,7 @@ def setup_bot(bot):
         except Exception as e:
             await ctx.send(f"❌ Error getting fan status: {str(e)}")
 
+    @bot.command()
     async def helpme(ctx):
         embed = discord.Embed(
             title="🤖 Bot Commands",
