@@ -1,5 +1,5 @@
 from discord.ext import commands, tasks
-from iot_controller import turn_on_pump, turn_off_pump, get_status, turn_on_fan, turn_off_fan
+from iot_controller import control_device, get_status
 from weather_api import get_weather
 import discord
 from ai_api import get_ai_response
@@ -69,26 +69,32 @@ def setup_bot(bot):
     @bot.command()
     async def pump_on(ctx):
         try:
-            turn_on_pump()
-            embed = discord.Embed(
-                title="🚿 Pump Control",
-                description="Water pump has been activated",
-                color=discord.Color.blue()
-            )
-            await ctx.send(embed=embed)
+            response = control_device("pump", "on")
+            if response["status"] == "success":
+                embed = discord.Embed(
+                    title="🚿 Pump Control",
+                    description="Water pump has been activated",
+                    color=discord.Color.blue()
+                )
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send(f"❌ Error activating pump: {response['message']}")
         except Exception as e:
             await ctx.send(f"❌ Error activating pump: {str(e)}")
 
     @bot.command()
     async def pump_off(ctx):
         try:
-            turn_off_pump()
-            embed = discord.Embed(
-                title="💧 Pump Control",
-                description="Water pump has been deactivated",
-                color=discord.Color.blue()
-            )
-            await ctx.send(embed=embed)
+            response = control_device("pump", "off")
+            if response["status"] == "success":
+                embed = discord.Embed(
+                    title="🚿 Pump Control",
+                    description="Water pump has been deactivated",
+                    color=discord.Color.blue()
+                )
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send(f"❌ Error deactivating pump: {response['message']}")
         except Exception as e:
             await ctx.send(f"❌ Error deactivating pump: {str(e)}")
 
@@ -258,33 +264,39 @@ def setup_bot(bot):
     @bot.command()
     async def fan_on(ctx):
         try:
-            turn_on_fan()
-            embed = discord.Embed(
+            response = control_device("fan", "on")
+            if response["status"] == "success":
+                embed = discord.Embed(
                 title="🌬️ Fan Control",
                 description="Fan has been activated",
                 color=discord.Color.blue()
-            )
-            await ctx.send(embed=embed)
+                )
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send(f"❌ Error activating fan: {response['message']}")
         except Exception as e:
             await ctx.send(f"❌ Error activating fan: {str(e)}")
 
     @bot.command()
     async def fan_off(ctx):
         try:
-            turn_off_fan()
-            embed = discord.Embed(
+            response = control_device("fan", "off")
+            if response["status"] == "success":
+                embed = discord.Embed(
                 title="🌬️ Fan Control",
                 description="Fan has been deactivated",
                 color=discord.Color.blue()
-            )
-            await ctx.send(embed=embed)
+                )
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send(f"❌ Error deactivating fan: {response['message']}")
         except Exception as e:
             await ctx.send(f"❌ Error deactivating fan: {str(e)}")
 
     @bot.command()
     async def fan_status(ctx):
         try:
-            status = get_fan_status()
+            status = get_status()
             embed = discord.Embed(
                 title="🌬️ Fan Status",
                 description=f"Fan is currently {'ON' if status else 'OFF'}",
